@@ -2,6 +2,7 @@
 
 const { BrowserWindow } = require('electron');
 const path = require('path');
+const { ZOOM_WEB_CLIENT_URL, APP_NAME, DEFAULT_WINDOW_SIZE } = require('./config/constants');
 
 /**
  * Singleton instance of the main window.
@@ -28,11 +29,11 @@ let mainWindow = null;
  */
 function createMainWindow() {
   mainWindow = new BrowserWindow({
-    width: 1280,
-    height: 800,
-    minWidth: 800,
-    minHeight: 600,
-    title: 'Zoom Linux Native',
+    width: DEFAULT_WINDOW_SIZE.width,
+    height: DEFAULT_WINDOW_SIZE.height,
+    minWidth: DEFAULT_WINDOW_SIZE.minWidth,
+    minHeight: DEFAULT_WINDOW_SIZE.minHeight,
+    title: APP_NAME,
     webPreferences: {
       contextIsolation: true,
       nodeIntegration: false,
@@ -41,9 +42,7 @@ function createMainWindow() {
     },
   });
 
-  // Placeholder: loads a blank page until Epic 1 implements the Zoom Web Client loading.
-  // TODO(joaopedroferraz): replace with zoom.us/wc in task 1.1
-  mainWindow.loadURL('about:blank');
+  mainWindow.loadURL(ZOOM_WEB_CLIENT_URL);
 
   mainWindow.on('closed', () => {
     mainWindow = null;
