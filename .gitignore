@@ -1,4 +1,11 @@
 GEMINI.md
 TASK_PLAN.md
-node_modules
-.agent
+node_modules/
+dist/
+out/
+.agent/
+.DS_Store
+*.log
+*.AppImage
+*.deb
+*.rpm

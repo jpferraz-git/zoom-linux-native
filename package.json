@@ -3,8 +3,8 @@
     "productName": "Zoom Linux Native",
     "version": "0.1.0",
     "description": "Unofficial desktop client for Linux that wraps the Zoom Web Client in Electron, avoiding native Qt client crash bugs on Wayland/PipeWire sessions.",
-    "main": "src/main.js",
-    "author": "Your Name <your.email@example.com>",
+    "main": "src/main/index.js",
+    "author": "João Pedro Ferraz <[EMAIL_ADDRESS]>",
     "license": "MIT",
     "private": true,
     "scripts": {
