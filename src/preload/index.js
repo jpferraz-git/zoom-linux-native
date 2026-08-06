@@ -3,18 +3,18 @@
 const { contextBridge } = require('electron');
 
 /**
- * Preload script — ponte segura entre o processo main e o renderer.
+ * Preload script — secure bridge between the main process and the renderer.
  *
- * Por quê: este é o ÚNICO ponto onde o renderer tem acesso controlado a
- * funcionalidades do sistema. Toda API exposta aqui deve ser mínima, tipada
- * e explícita. Nunca expor `ipcRenderer` diretamente — sempre encapsular
- * via métodos nomeados neste objeto.
+ * Why: this is the ONLY point where the renderer has controlled access to
+ * system capabilities. Every API exposed here must be minimal, typed and
+ * explicit. Never expose `ipcRenderer` directly — always wrap it through
+ * named methods on this object.
  *
- * Atualmente expõe um objeto vazio como placeholder.
- * APIs reais serão adicionadas nas tasks 1.x, 3.x e 5.x conforme necessário.
- * Ver GEMINI.md §7 (Contrato de IPC) e §5 (Facade pattern).
+ * Currently exposes an empty object as a placeholder.
+ * Real APIs will be added in tasks 1.x, 3.x and 5.x as needed.
+ * See GEMINI.md §7 (IPC Contract) and §5 (Facade pattern).
  */
 contextBridge.exposeInMainWorld('electronAPI', {
-  // TODO(joaopedroferraz): adicionar APIs reais a partir do Épico 1
-  // Exemplo: reloadApp: () => ipcRenderer.invoke(CHANNELS.APP_RELOAD)
+  // TODO(joaopedroferraz): add real APIs starting from Epic 1
+  // Example: reloadApp: () => ipcRenderer.invoke(CHANNELS.APP_RELOAD)
 });
