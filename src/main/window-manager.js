@@ -4,27 +4,27 @@ const { BrowserWindow } = require('electron');
 const path = require('path');
 
 /**
- * Instância singleton da janela principal.
- * Mantida como closure interna — nunca exposta como global.
+ * Singleton instance of the main window.
+ * Kept as an internal closure — never exposed as a global.
  *
  * @type {BrowserWindow | null}
  */
 let mainWindow = null;
 
 /**
- * Cria a janela principal do aplicativo com configurações de segurança obrigatórias.
+ * Creates the main application window with mandatory security settings.
  *
- * Por quê Factory pattern: centraliza a criação da BrowserWindow com webPreferences
- * seguras padronizadas, tornando impossível criar uma janela insegura por esquecimento.
- * Ver GEMINI.md §5 (Design patterns) e §2 (Regras de ouro).
+ * Why Factory pattern: centralises BrowserWindow creation with standardised secure
+ * webPreferences, making it impossible to accidentally create an insecure window.
+ * See GEMINI.md §5 (Design patterns) and §2 (Golden rules).
  *
- * Configurações de segurança aplicadas:
- * - `contextIsolation: true` — isolamento obrigatório entre main e renderer.
- * - `nodeIntegration: false` — o conteúdo é de terceiros (Zoom); expor Node.js seria RCE.
- * - `sandbox: true` — camada extra de isolamento do processo renderer.
- * - `preload` — único ponto de comunicação renderer ↔ main, via contextBridge.
+ * Security settings applied:
+ * - `contextIsolation: true` — mandatory isolation between main and renderer.
+ * - `nodeIntegration: false` — content is third-party (Zoom); exposing Node.js would be RCE.
+ * - `sandbox: true` — extra isolation layer for the renderer process.
+ * - `preload` — the sole communication point between renderer and main, via contextBridge.
  *
- * @returns {BrowserWindow} A janela principal criada.
+ * @returns {BrowserWindow} The created main window.
  */
 function createMainWindow() {
   mainWindow = new BrowserWindow({
@@ -41,8 +41,8 @@ function createMainWindow() {
     },
   });
 
-  // Placeholder: carrega tela em branco até o Épico 1 implementar o carregamento do Zoom.
-  // TODO(joaopedroferraz): substituir por zoom.us/wc na task 1.1
+  // Placeholder: loads a blank page until Epic 1 implements the Zoom Web Client loading.
+  // TODO(joaopedroferraz): replace with zoom.us/wc in task 1.1
   mainWindow.loadURL('about:blank');
 
   mainWindow.on('closed', () => {
@@ -53,7 +53,7 @@ function createMainWindow() {
 }
 
 /**
- * Retorna a instância atual da janela principal, ou null se não existir.
+ * Returns the current main window instance, or null if it does not exist.
  *
  * @returns {BrowserWindow | null}
  */
