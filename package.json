@@ -1,0 +1,50 @@
+{
+    "name": "zoom-linux-native",
+    "productName": "Zoom Linux Native",
+    "version": "0.1.0",
+    "description": "Unofficial desktop client for Linux that wraps the Zoom Web Client in Electron, avoiding native Qt client crash bugs on Wayland/PipeWire sessions.",
+    "main": "src/main.js",
+    "author": "Your Name <your.email@example.com>",
+    "license": "MIT",
+    "private": true,
+    "scripts": {
+        "start": "electron .",
+        "start:wayland": "electron . --ozone-platform=wayland",
+        "build:linux": "electron-builder --linux AppImage deb rpm",
+        "build:appimage": "electron-builder --linux AppImage"
+    },
+    "devDependencies": {
+        "electron": "^32.0.0",
+        "electron-builder": "^25.0.0"
+    },
+    "build": {
+        "appId": "dev.yourname.zoomlinuxnative",
+        "productName": "Zoom Linux Native",
+        "directories": {
+            "output": "dist"
+        },
+        "files": [
+            "src/**/*",
+            "build/**/*",
+            "package.json"
+        ],
+        "linux": {
+            "category": "Network",
+            "icon": "build/icon.png",
+            "target": [
+                "AppImage",
+                "deb",
+                "rpm"
+            ],
+            "synopsis": "Unofficial Zoom client for Linux, optimized for Wayland",
+            "description": "Unofficial Electron wrapper for the Zoom Web Client, built to work around screen sharing bugs of the native client on Wayland/PipeWire. Independent project, not affiliated with Zoom Video Communications."
+        },
+        "deb": {
+            "depends": [
+                "libnotify4",
+                "libxtst6",
+                "libnss3"
+            ]
+        }
+    }
+}
