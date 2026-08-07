@@ -3,7 +3,7 @@ TASK_PLAN.md
 node_modules/
 dist/
 out/
-.agent/
+.agents/
 .DS_Store
 *.log
 *.AppImage
