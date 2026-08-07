@@ -1,9 +1,10 @@
 GEMINI.md
 TASK_PLAN.md
+package-lock.json
 node_modules/
 dist/
 out/
-.agent/
+.agents/
 .DS_Store
 *.log
 *.AppImage
