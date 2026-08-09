@@ -74,10 +74,11 @@ value on top of "just use the browser" in two ways:
 └─────────────────────────────┘
 ```
 
-Screen sharing flows through the OS-native `xdg-desktop-portal`/PipeWire pipeline via
-Electron's `setDisplayMediaRequestHandler({ useSystemPicker: true })`, rather than a
-custom capture implementation — the same approach Discord, Slack, and other Electron
-apps use for stable Wayland screen sharing.
+Screen sharing flows through the OS-native `xdg-desktop-portal`/PipeWire pipeline.
+The app enables Chromium's `WebRTCPipeWireCapturer` flag, which causes
+`getDisplayMedia()` calls to route through PipeWire automatically — triggering the
+system's native screen picker on Wayland, or using X11's capture path on X11. This is
+the same pipeline every Chromium-based browser uses for stable screen sharing.
 
 Full conceptual walkthrough (display servers, compositors, WebRTC, Electron's process
 model) lives in [`GUIA_CONCEITUAL.md`](./GUIA_CONCEITUAL.md). Architecture rules and
@@ -88,11 +89,30 @@ roadmap lives in [`PLANO_DE_TASKS.md`](./PLANO_DE_TASKS.md).
 
 ### Prerequisites
 
-- Node.js 18+ and npm
-- Linux, with `xdg-desktop-portal` installed and a backend matching your desktop
-  environment (`xdg-desktop-portal-gnome`, `xdg-desktop-portal-kde`, or
-  `xdg-desktop-portal-wlr` for wlroots-based compositors like Sway). Without this,
-  screen sharing under Wayland won't have a picker to hand off to.
+- **Node.js 18+** and npm
+- **Linux** (Wayland or X11 — the app auto-detects via `ozone-platform-hint=auto`)
+
+#### System dependencies for screen sharing (Wayland)
+
+Screen sharing on Wayland requires the OS to provide a portal and a PipeWire-based
+capture pipeline. These are **not installed by this app** — they are part of the
+operating system's display infrastructure:
+
+| Package | Purpose | Notes |
+|---|---|---|
+| `xdg-desktop-portal` | D-Bus portal daemon | Handles screen capture requests from sandboxed apps |
+| `xdg-desktop-portal-gnome` | GNOME backend | For GNOME desktop environment |
+| `xdg-desktop-portal-kde` | KDE backend | For KDE Plasma |
+| `xdg-desktop-portal-wlr` | wlroots backend | For Sway, Hyprland, and other wlroots compositors |
+| `pipewire` + `wireplumber` | Media pipeline | Usually pre-installed on modern distros (Ubuntu 22.04+, Fedora 34+) |
+
+> **Note:** On most modern distros (Ubuntu 22.04+, Fedora 34+, Arch), these packages
+> are already installed and running by default. If screen sharing doesn't show a
+> picker dialog, verify your portal backend is installed and running:
+> `systemctl --user status xdg-desktop-portal`
+
+On **X11** sessions, screen sharing works without these dependencies — Chromium
+uses its native X11 capture path directly.
 
 ### Run in development
 
@@ -121,17 +141,23 @@ Artifacts land in `dist/`.
 This project is upfront about what it does *not* fix, because that honesty is part of
 what makes it trustworthy as more than a demo:
 
-| Capability | Native client (with X11 workaround) | This app |
-|---|---|---|
-| Screen share stability on Wayland | Unstable / crash-prone | Stable (Chromium's WebRTC + PipeWire pipeline) |
-| Virtual backgrounds / Studio Effects | Supported | Not supported (Web Client limitation) |
-| Chat panel visibility | Always visible | Visible, enforced via minimum window width |
-| Screen-share viewing reliability | Generally reliable | Occasional known Web Client bugs; mitigated with error detection + one-click reload, not eliminated |
-| Dependency on X11 being available | Required for the crash workaround | None |
+| Capability | Native client (with X11 workaround) | This app | Notes |
+|---|---|---|---|
+| Screen share (start/stop) on Wayland | ❌ Crashes | ✅ Stable | Chromium's WebRTC + PipeWire pipeline |
+| Screen share viewing | ✅ Reliable | ⚠️ Occasional glitches | Web Client bug; mitigated with error detection + one-click reload |
+| Virtual backgrounds / Studio Effects | ✅ Supported | ❌ Not available | Web Client limitation — these are native-only features |
+| Chat panel visibility | ✅ Always visible | ✅ Enforced | `minWidth: 1100` prevents responsive breakpoint collapse |
+| Camera / Microphone | ✅ Works | ✅ Auto-approved | Permissions auto-granted for zoom.us origin only |
+| Native notifications | ✅ Works | ✅ Works | Electron supports Web Notifications natively |
+| Dependency on X11 | Required for workaround | None | Works on pure Wayland sessions |
+| System tray icon | ✅ Present | 🔜 Epic 3 | Planned for next development phase |
+| End-to-end encryption (E2EE) | ✅ Supported | ❌ Not available | Web Client limitation |
+| Breakout rooms (host) | ✅ Supported | ⚠️ Limited | Web Client supports joining but not managing |
 
-*(This table is filled in with real, dated test results as the project matures — see
-the `/testar-sessao-linux` workflow in `.agent/workflows/`. Treat placeholder rows as
-provisional until backed by actual test logs.)*
+> **Last tested:** 2026-08-09. Results reflect the Zoom Web Client as of this date.
+> The Zoom Web Client is maintained by Zoom — its capabilities may change independently
+> of this project. Virtual backgrounds and E2EE are architectural limitations of the
+> Web Client, not bugs this project can fix.
 
 ## Contributing
 

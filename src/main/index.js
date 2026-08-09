@@ -1,9 +1,9 @@
 'use strict';
 
-const { app, BrowserWindow } = require('electron');
+const { app, BrowserWindow, session } = require('electron');
 const { enforceSingleInstance } = require('./single-instance');
 const windowManager = require('./window-manager');
-const { attachNavigationGuards } = require('./security/navigation-guard');
+const { setupPermissionHandlers, setupDisplayMediaHandler } = require('./permission-manager');
 
 /**
  * Main process entry point.
@@ -15,25 +15,40 @@ const { attachNavigationGuards } = require('./security/navigation-guard');
  * and §12 (anti-pattern: business logic inside main/index.js).
  */
 
-// ── Single Instance Lock (Task 1.4) ──────────────────────────────────────────
-// Prevents multiple instances of the app from running simultaneously.
-// If a second instance is launched, it will quit and focus the existing window.
-const gotTheLock = app.requestSingleInstanceLock();
+// ── Task 2.1: Chromium flags for Wayland/Ozone/PipeWire ──────────────────
+// These MUST be set before app.whenReady() — Chromium reads them during early
+// initialisation, before any window is created.
+//
+// - WebRTCPipeWireCapturer: enables screen capture via PipeWire (the core of
+//   this project). On Wayland, this causes getDisplayMedia to route through
+//   xdg-desktop-portal, triggering the system's native screen picker.
+// - WaylandWindowDecorations: requests server-side decorations (CSD) when
+//   running under a Wayland compositor that supports them.
+// - ozone-platform-hint=auto: lets Chromium auto-detect Wayland vs X11.
+//   Avoids forcing --ozone-platform=wayland, which would break on X11-only
+//   distros. See GEMINI.md Task 2.1 for rationale.
+app.commandLine.appendSwitch(
+  'enable-features',
+  'WebRTCPipeWireCapturer,WaylandWindowDecorations'
+);
+app.commandLine.appendSwitch('ozone-platform-hint', 'auto');
 
-if (!gotTheLock) {
-  // Another instance is already running — quit immediately.
-  app.quit();
+// ── Single Instance Lock (Task 1.4) ──────────────────────────────────────
+// Must run before app.whenReady() — acquires the lock early.
+const isFirstInstance = enforceSingleInstance();
+
+if (!isFirstInstance) {
+  // Another instance is already running — enforceSingleInstance() already
+  // called app.quit(). Nothing else to do.
 } else {
-  app.on('second-instance', () => {
-    // Someone tried to open a second instance — focus the existing window.
-    const win = windowManager.getMainWindow();
-    if (win) {
-      if (win.isMinimized()) win.restore();
-      win.focus();
-    }
-  });
-
   app.whenReady().then(() => {
+    // ── Task 2.2 + 2.3: Permission & media handlers ────────────────────
+    // Must be set up before the window loads zoom.us/wc, so that media
+    // permission requests from the Zoom Web Client are handled correctly
+    // from the first frame.
+    setupPermissionHandlers(session.defaultSession);
+    setupDisplayMediaHandler(session.defaultSession);
+
     windowManager.createMainWindow();
 
     app.on('activate', () => {
