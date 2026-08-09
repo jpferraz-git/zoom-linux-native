@@ -15,21 +15,31 @@ const { attachNavigationGuards } = require('./security/navigation-guard');
  * and §12 (anti-pattern: business logic inside main/index.js).
  */
 
-// Single-instance lock must be acquired before anything else.
-// If another instance is already running, this call quits the process.
-if (!enforceSingleInstance()) {
-  // app.quit() was already called inside enforceSingleInstance().
-  // Nothing else to do — the process will exit.
+// ── Single Instance Lock (Task 1.4) ──────────────────────────────────────────
+// Prevents multiple instances of the app from running simultaneously.
+// If a second instance is launched, it will quit and focus the existing window.
+const gotTheLock = app.requestSingleInstanceLock();
+
+if (!gotTheLock) {
+  // Another instance is already running — quit immediately.
+  app.quit();
 } else {
+  app.on('second-instance', () => {
+    // Someone tried to open a second instance — focus the existing window.
+    const win = windowManager.getMainWindow();
+    if (win) {
+      if (win.isMinimized()) win.restore();
+      win.focus();
+    }
+  });
+
   app.whenReady().then(() => {
-    const win = windowManager.createMainWindow();
-    attachNavigationGuards(win);
+    windowManager.createMainWindow();
 
     app.on('activate', () => {
       // macOS: recreate the window if the dock icon is clicked and no windows are open.
       if (BrowserWindow.getAllWindows().length === 0) {
-        const newWin = windowManager.createMainWindow();
-        attachNavigationGuards(newWin);
+        windowManager.createMainWindow();
       }
     });
   });
