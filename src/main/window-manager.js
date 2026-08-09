@@ -2,6 +2,14 @@
 
 const { BrowserWindow } = require('electron');
 const path = require('path');
+const { attachNavigationGuards } = require('./navigation-guard');
+
+/**
+ * The URL of the Zoom Web Client.
+ * This is the page loaded inside the BrowserWindow.
+ * @type {string}
+ */
+const ZOOM_WEB_CLIENT_URL = 'https://zoom.us/wc';
 
 /**
  * Singleton instance of the main window.
@@ -24,14 +32,19 @@ let mainWindow = null;
  * - `sandbox: true` — extra isolation layer for the renderer process.
  * - `preload` — the sole communication point between renderer and main, via contextBridge.
  *
+ * Window sizing rationale (Task 2.6 preview):
+ * - `minWidth: 1100` — prevents the Zoom Web Client's responsive breakpoint from
+ *   collapsing the chat panel. Empirically tested against zoom.us/wc layout as of
+ *   2026-08-09. If Zoom changes their breakpoints, this value may need adjustment.
+ *
  * @returns {BrowserWindow} The created main window.
  */
 function createMainWindow() {
   mainWindow = new BrowserWindow({
     width: 1280,
     height: 800,
-    minWidth: 800,
-    minHeight: 600,
+    minWidth: 1100,
+    minHeight: 700,
     title: 'Zoom Linux Native',
     webPreferences: {
       contextIsolation: true,
@@ -41,9 +54,12 @@ function createMainWindow() {
     },
   });
 
-  // Placeholder: loads a blank page until Epic 1 implements the Zoom Web Client loading.
-  // TODO(joaopedroferraz): replace with zoom.us/wc in task 1.1
-  mainWindow.loadURL('about:blank');
+  // Task 1.3: Attach navigation guards to enforce domain allowlist.
+  // External links (terms of use, privacy policy, etc.) open in the system browser.
+  attachNavigationGuards(mainWindow.webContents);
+
+  // Task 1.1: Load the Zoom Web Client.
+  mainWindow.loadURL(ZOOM_WEB_CLIENT_URL);
 
   mainWindow.on('closed', () => {
     mainWindow = null;
