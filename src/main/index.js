@@ -1,8 +1,9 @@
 'use strict';
 
 const { app, BrowserWindow } = require('electron');
-const path = require('path');
+const { enforceSingleInstance } = require('./single-instance');
 const windowManager = require('./window-manager');
+const { attachNavigationGuards } = require('./security/navigation-guard');
 
 /**
  * Main process entry point.
