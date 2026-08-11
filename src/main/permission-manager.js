@@ -8,10 +8,7 @@ const ZOOM_ALLOWED_PERMISSIONS = new Set([
   'notifications',
 ]);
 
-/**
- * Sets up the permission request handler for the default session.
- * @param {import('electron').Session} ses
- */
+
 function setupPermissionHandlers(ses) {
   ses.setPermissionRequestHandler((webContents, permission, callback, details) => {
     const origin = details.requestingUrl || '';
@@ -49,10 +46,7 @@ function setupPermissionHandlers(ses) {
   });
 }
 
-/**
- * Sets up the display media request handler for screen sharing.
- * @param {import('electron').Session} ses
- */
+
 function setupDisplayMediaHandler(ses) {
   ses.setDisplayMediaRequestHandler(async (request, callback) => {
     try {
