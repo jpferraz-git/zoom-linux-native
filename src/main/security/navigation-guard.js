@@ -3,10 +3,6 @@
 const { shell } = require('electron');
 const { isAllowedHostname } = require('../config/allowed-origins');
 
-/**
- * Attaches navigation guards to a BrowserWindow's webContents.
- * @param {import('electron').BrowserWindow} win
- */
 function attachNavigationGuards(win) {
   const contents = win.webContents;
 

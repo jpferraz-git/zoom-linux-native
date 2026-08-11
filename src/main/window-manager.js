@@ -13,15 +13,6 @@ let mainWindow = null;
 let saveStateTimer = null;
 
 
-/**
- * Creates the main application BrowserWindow with secure webPreferences.
- *
- * Factory pattern (GEMINI.md §5): centralizes BrowserWindow creation with
- * hardened defaults (contextIsolation, sandbox, no nodeIntegration) so it's
- * impossible to create an insecure window by accident.
- *
- * @returns {import('electron').BrowserWindow} The created main window.
- */
 function createMainWindow() {
   const savedState = loadWindowState();
 
@@ -95,10 +86,6 @@ function createMainWindow() {
 }
 
 
-/**
- * Returns the current main BrowserWindow instance, or null if none exists.
- * @returns {import('electron').BrowserWindow|null}
- */
 function getMainWindow() {
   return mainWindow;
 }

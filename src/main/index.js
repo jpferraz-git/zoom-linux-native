@@ -12,32 +12,12 @@ const { setupUpdater } = require('./updater');
 const { extractDeepLinkFromArgv, handleDeepLink } = require('./deep-link-handler');
 const { registerAppHandlers } = require('./ipc/handlers/app-handlers');
 
-/**
- * Habilita a captura de tela via PipeWire em sessões Wayland.
- *
- * Por quê: o cliente nativo Qt do Zoom para Linux tem um bug conhecido de
- * crash (SIGABRT) ao iniciar/parar compartilhamento de tela em Wayland +
- * PipeWire. Como este app roda o Zoom Web Client dentro do Chromium/Electron,
- * podemos usar o pipeline padrão WebRTC + PipeWire do próprio Chromium, que é
- * mais estável.
- *
- * 'ozone-platform-hint=auto' deixa o Chromium detectar Wayland vs X11
- * sozinho, em vez de forçar --ozone-platform=wayland (o que quebraria o
- * app em distros que ainda rodam só X11).
- */
 app.commandLine.appendSwitch(
   'enable-features',
   'WebRTCPipeWireCapturer,WaylandWindowDecorations'
 );
 app.commandLine.appendSwitch('ozone-platform-hint', 'auto');
 
-/**
- * Registra o app como handler do protocolo zoommtg://.
- *
- * Por quê: sem isso, links de reunião (e-mail, calendário) abrem no navegador
- * do sistema em vez do app. Em modo dev (process.defaultApp), o Electron precisa
- * do caminho do script como argumento; em produção, o registro é direto.
- */
 if (process.defaultApp) {
   app.setAsDefaultProtocolClient('zoommtg', process.execPath, [path.resolve(process.argv[1])]);
 } else {

@@ -3,16 +3,6 @@
 const { app, BrowserWindow } = require('electron');
 const { extractDeepLinkFromArgv, handleDeepLink } = require('./deep-link-handler');
 
-/**
- * Enforces that only one instance of the app runs at a time.
- *
- * Se uma segunda instância é aberta (ex: via deep link zoommtg://),
- * a primeira instância recebe o evento `second-instance` com os argv
- * da segunda — permitindo tratar deep links sem abrir janela duplicada.
- *
- * @param {Function} getMainWindow - Function that returns the main BrowserWindow (or null).
- * @returns {boolean} true if this is the first (and only) instance.
- */
 function enforceSingleInstance(getMainWindow) {
   const gotTheLock = app.requestSingleInstanceLock();
 

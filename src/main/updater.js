@@ -4,12 +4,6 @@ const { autoUpdater } = require('electron-updater');
 const { dialog } = require('electron');
 
 
-/**
- * Configures the auto-updater to check for new versions via GitHub Releases.
- *
- * Downloads are not automatic — the user is prompted before downloading
- * and before installing. Errors are logged but never crash the app.
- */
 function setupUpdater() {
   autoUpdater.autoDownload = false;
   

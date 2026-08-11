@@ -3,25 +3,6 @@
 const { isAllowedUrl } = require('./config/allowed-origins');
 const { ZOOM_WEB_CLIENT_URL } = require('./config/constants');
 
-/**
- * Parses a `zoommtg://` deep link and translates it to the corresponding
- * Zoom Web Client URL.
- *
- * Por quê: quando o usuário clica num link de reunião (e-mail, calendário),
- * o SO dispara o protocolo `zoommtg://` registrado pelo app. Este módulo
- * traduz esse link para a URL do web client que o BrowserWindow pode carregar.
- * A URL resultante DEVE passar pela allowlist central antes de ser navegada
- * (GEMINI.md §2.4) — este módulo não navega diretamente, apenas retorna a URL.
- *
- * Formatos conhecidos de zoommtg://:
- *   zoommtg://zoom.us/join?confno=1234567890&pwd=abc123
- *   zoommtg://zoom.us/join?action=join&confno=1234567890&pwd=abc123
- *   zoommtg://zoom.us/start?confno=1234567890
- *
- * @param {string} deepLinkUrl - The raw zoommtg:// URL received from the OS.
- * @returns {string|null} The translated https://zoom.us/wc/join/... URL, or null
- *   if the link is invalid or fails allowlist validation.
- */
 function parseDeepLink(deepLinkUrl) {
   if (!deepLinkUrl || typeof deepLinkUrl !== 'string') return null;
 
@@ -62,17 +43,6 @@ function parseDeepLink(deepLinkUrl) {
   return resultUrl;
 }
 
-/**
- * Extracts a zoommtg:// URL from process argv, if present.
- *
- * Por quê: no Linux, quando o app já está rodando e o SO dispara o protocolo,
- * o Electron recebe a URL via o evento `second-instance` com os argv da segunda
- * instância. Quando o app NÃO está rodando, a URL vem no process.argv da
- * primeira instância. Este helper extrai a URL de qualquer array de argv.
- *
- * @param {string[]} argv - The process.argv array (from first or second instance).
- * @returns {string|null} The zoommtg:// URL found in argv, or null.
- */
 function extractDeepLinkFromArgv(argv) {
   if (!Array.isArray(argv)) return null;
 
@@ -85,12 +55,6 @@ function extractDeepLinkFromArgv(argv) {
   return null;
 }
 
-/**
- * Handles a deep link by parsing it and navigating the main window.
- *
- * @param {string} deepLinkUrl - The raw zoommtg:// URL.
- * @param {Function} getMainWindow - Function that returns the main BrowserWindow (or null).
- */
 function handleDeepLink(deepLinkUrl, getMainWindow) {
   const webClientUrl = parseDeepLink(deepLinkUrl);
 

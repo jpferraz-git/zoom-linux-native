@@ -5,17 +5,6 @@ const { dialog } = require('electron');
 const MEDIA_ERROR_PATTERN = /\b(media|screen.?shar|webrtc|video|destination.?sharing|capturer|pipewire|getdisplaymedia)\b/i;
 
 
-/**
- * Attaches error monitoring listeners to a BrowserWindow's webContents.
- *
- * Handles three failure modes:
- * - Renderer crash (render-process-gone): shows a dialog with Reload/Close
- * - Media-related console errors: logged for debugging screen share issues
- * - Page load failure: shows offline.html fallback with retry button
- *
- * @param {import('electron').WebContents} webContents
- * @param {import('electron').BrowserWindow} window
- */
 function attachErrorMonitor(webContents, window) {
   webContents.on('render-process-gone', (_event, details) => {
     const { reason, exitCode } = details;
