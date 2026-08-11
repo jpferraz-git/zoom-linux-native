@@ -1,6 +1,16 @@
 'use strict';
 
 
+/**
+ * Injects Content-Security-Policy headers on every HTTP response.
+ *
+ * Por quê: restringe quais origens podem carregar scripts, estilos, imagens,
+ * fontes e conexões WebSocket dentro do renderer. Mesmo que o navigation-guard
+ * bloqueie navegação, o CSP adiciona uma segunda camada de defesa contra
+ * injeção de conteúdo de terceiros (defense-in-depth).
+ *
+ * @param {import('electron').Session} session - The Electron session to configure.
+ */
 function setupCSP(session) {
   session.webRequest.onHeadersReceived((details, callback) => {
     callback({
