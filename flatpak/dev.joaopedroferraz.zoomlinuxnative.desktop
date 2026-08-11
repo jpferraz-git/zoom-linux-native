@@ -1,0 +1,12 @@
+[Desktop Entry]
+Name=Zoom Linux Native
+Comment=Unofficial Zoom client for Linux, optimized for Wayland screen sharing
+Exec=zoom-linux-native %U
+Icon=dev.joaopedroferraz.zoomlinuxnative
+Terminal=false
+Type=Application
+Categories=Network;VideoConference;Chat;
+MimeType=x-scheme-handler/zoommtg;
+StartupWMClass=zoom-linux-native
+StartupNotify=true
+Keywords=zoom;meeting;video;conference;wayland;
