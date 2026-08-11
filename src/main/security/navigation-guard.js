@@ -1,7 +1,7 @@
 'use strict';
 
 const { shell } = require('electron');
-const { isAllowedOrigin } = require('../config/allowed-origins');
+const { isAllowedHostname } = require('../config/allowed-origins');
 
 /**
  * Attaches navigation guards to a BrowserWindow's webContents.
@@ -14,7 +14,7 @@ function attachNavigationGuards(win) {
     try {
       const { hostname } = new URL(url);
 
-      if (!isAllowedOrigin(hostname)) {
+      if (!isAllowedHostname(hostname)) {
         event.preventDefault();
         shell.openExternal(url);
       }
@@ -27,7 +27,7 @@ function attachNavigationGuards(win) {
     try {
       const { hostname } = new URL(url);
 
-      if (isAllowedOrigin(hostname)) {
+      if (isAllowedHostname(hostname)) {
         contents.loadURL(url);
       } else {
         shell.openExternal(url);
