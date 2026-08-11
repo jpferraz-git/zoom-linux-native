@@ -11,6 +11,11 @@ const TRAY_ICON_PATH = path.join(__dirname, '../../build/icon.png');
 let tray = null;
 
 
+/**
+ * Creates the system tray icon with context menu (Open/Reload/Quit).
+ * Singleton pattern: only one tray instance exists at a time.
+ * @returns {import('electron').Tray} The created tray instance.
+ */
 function createTray() {
   let icon;
 
@@ -72,6 +77,10 @@ function showMainWindow() {
 }
 
 
+/**
+ * Returns the current Tray instance, or null if not yet created.
+ * @returns {import('electron').Tray|null}
+ */
 function getTray() {
   return tray;
 }
