@@ -8,16 +8,11 @@ const { injectCSS } = require('./css-injector');
 const { ZOOM_WEB_CLIENT_URL, APP_NAME, DEFAULT_WINDOW_SIZE } = require('./config/constants');
 const { loadWindowState, saveWindowState } = require('./window-state');
 
-/**
- * @type {BrowserWindow | null}
- */
+
 let mainWindow = null;
 let saveStateTimer = null;
 
-/**
- * Creates the main application window.
- * @returns {BrowserWindow} The created main window.
- */
+
 function createMainWindow() {
   const savedState = loadWindowState();
 
@@ -90,9 +85,7 @@ function createMainWindow() {
   return mainWindow;
 }
 
-/**
- * @returns {BrowserWindow | null}
- */
+
 function getMainWindow() {
   return mainWindow;
 }
