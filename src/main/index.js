@@ -18,7 +18,7 @@ app.commandLine.appendSwitch('ozone-platform-hint', 'auto');
 const isFirstInstance = enforceSingleInstance();
 
 if (!isFirstInstance) {
-  // App will quit
+
 } else {
   app.isQuitting = false;
 
