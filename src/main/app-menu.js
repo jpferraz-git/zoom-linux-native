@@ -6,6 +6,11 @@ const { APP_NAME, ZOOM_WEB_CLIENT_URL } = require('./config/constants');
 const REPO_URL = 'https://github.com/jpferraz-git/zoom-linux-native';
 
 
+/**
+ * Creates the native application menu bar (File/Edit/View/Help).
+ * DevTools toggle is only shown in development mode.
+ * @param {import('electron').BrowserWindow} mainWindow - The main window for menu actions.
+ */
 function createAppMenu(mainWindow) {
   const isDev = !require('electron').app.isPackaged;
 
