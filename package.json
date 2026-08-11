@@ -43,8 +43,19 @@
                 "rpm"
             ],
             "synopsis": "Unofficial Zoom client for Linux, optimized for Wayland",
-            "description": "Unofficial Electron wrapper for the Zoom Web Client, built to work around screen sharing bugs of the native client on Wayland/PipeWire. Independent project, not affiliated with Zoom Video Communications."
+            "description": "Unofficial Electron wrapper for the Zoom Web Client, built to work around screen sharing bugs of the native client on Wayland/PipeWire. Independent project, not affiliated with Zoom Video Communications.",
+            "mimeTypes": [
+                "x-scheme-handler/zoommtg"
+            ]
         },
+        "protocols": [
+            {
+                "name": "Zoom Meeting",
+                "schemes": [
+                    "zoommtg"
+                ]
+            }
+        ],
         "deb": {
             "depends": [
                 "libnotify4",
