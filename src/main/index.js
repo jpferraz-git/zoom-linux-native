@@ -6,6 +6,8 @@ const windowManager = require('./window-manager');
 const { setupPermissionHandlers, setupDisplayMediaHandler } = require('./permission-manager');
 const { createTray } = require('./tray-manager');
 const { createAppMenu } = require('./app-menu');
+const { setupCSP } = require('./security/csp-manager');
+const { setupUpdater } = require('./updater');
 
 app.commandLine.appendSwitch(
   'enable-features',
@@ -27,6 +29,9 @@ if (!isFirstInstance) {
   app.whenReady().then(() => {
     setupPermissionHandlers(session.defaultSession);
     setupDisplayMediaHandler(session.defaultSession);
+    setupCSP(session.defaultSession);
+    
+    setupUpdater();
 
     const mainWindow = windowManager.createMainWindow();
 
