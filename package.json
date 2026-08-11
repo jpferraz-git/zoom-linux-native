@@ -11,11 +11,13 @@
         "start": "electron .",
         "start:wayland": "electron . --ozone-platform=wayland",
         "build:linux": "electron-builder --linux AppImage deb rpm",
-        "build:appimage": "electron-builder --linux AppImage"
+        "build:appimage": "electron-builder --linux AppImage",
+        "test": "jest --verbose"
     },
     "devDependencies": {
         "electron": "^32.0.0",
-        "electron-builder": "^25.0.0"
+        "electron-builder": "^25.0.0",
+        "jest": "^29.7.0"
     },
     "dependencies": {
         "electron-updater": "^6.3.9"
