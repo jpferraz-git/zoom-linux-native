@@ -47,11 +47,17 @@ function attachErrorMonitor(webContents, window) {
     }
   });
 
-  webContents.on('did-fail-load', (_event, errorCode, errorDescription, validatedURL) => {
+  webContents.on('did-fail-load', (_event, errorCode, errorDescription, validatedURL, isMainFrame) => {
     console.error(
       `[error-monitor] Page load failed. URL: ${validatedURL}, ` +
         `error: ${errorDescription} (code: ${errorCode})`
     );
+
+    // If it's a main frame network error (e.g., ERR_INTERNET_DISCONNECTED)
+    if (isMainFrame && errorCode !== -3 /* ERR_ABORTED */) {
+      const path = require('path');
+      window.loadFile(path.join(__dirname, 'assets', 'offline.html'));
+    }
   });
 }
 
