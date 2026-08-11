@@ -2,10 +2,7 @@
 
 const { app, BrowserWindow } = require('electron');
 
-/**
- * Enforces a single-instance lock for the application.
- * @returns {boolean} `true` if this is the first (primary) instance.
- */
+
 function enforceSingleInstance() {
   const gotTheLock = app.requestSingleInstanceLock();
 
