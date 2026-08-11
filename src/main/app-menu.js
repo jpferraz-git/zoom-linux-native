@@ -5,10 +5,7 @@ const { APP_NAME, ZOOM_WEB_CLIENT_URL } = require('./config/constants');
 
 const REPO_URL = 'https://github.com/jpferraz-git/zoom-linux-native';
 
-/**
- * Creates and sets the native application menu bar.
- * @param {import('electron').BrowserWindow} mainWindow
- */
+
 function createAppMenu(mainWindow) {
   const isDev = !require('electron').app.isPackaged;
 
