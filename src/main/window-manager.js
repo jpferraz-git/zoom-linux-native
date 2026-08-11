@@ -31,6 +31,9 @@ function createMainWindow() {
       contextIsolation: true,
       nodeIntegration: false,
       sandbox: true,
+      webviewTag: false,
+      disableBlinkFeatures: 'Auxclick',
+      navigateOnDragDrop: false,
       preload: path.join(__dirname, '../preload/index.js'),
     },
   };
