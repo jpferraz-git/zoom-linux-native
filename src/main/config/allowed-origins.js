@@ -1,20 +1,16 @@
-'use strict';
-
-/** @type {string[]} Hostnames allowed to load inside the BrowserWindow. */
-const ALLOWED_ORIGINS = [
-  'zoom.us',
-  'zoom.com',
+const ALLOWED_HOST_PATTERNS = [
+  /^([a-z0-9-]+\.)*zoom\.us$/i,
+  /^([a-z0-9-]+\.)*zoomgov\.com$/i,
 ];
 
-/**
- * Checks whether a given hostname belongs to the allowlist.
- * @param {string} hostname
- * @returns {boolean}
- */
-function isAllowedOrigin(hostname) {
-  return ALLOWED_ORIGINS.some(
-    (allowed) => hostname === allowed || hostname.endsWith(`.${allowed}`)
-  );
+function isAllowedOrigin(urlString) {
+  try {
+    const { hostname, protocol } = new URL(urlString);
+    if (protocol !== 'https:') return false;
+    return ALLOWED_HOST_PATTERNS.some((pattern) => pattern.test(hostname));
+  } catch {
+    return false;
+  }
 }
 
-module.exports = { ALLOWED_ORIGINS, isAllowedOrigin };
+module.exports = { isAllowedOrigin };

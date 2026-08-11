@@ -1,9 +1,6 @@
 'use strict';
 
-/**
- * Attaches a Content-Security-Policy header to all responses.
- * @param {import('electron').Session} session
- */
+
 function setupCSP(session) {
   session.webRequest.onHeadersReceived((details, callback) => {
     callback({
