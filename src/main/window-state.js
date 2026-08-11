@@ -9,6 +9,10 @@ const STATE_FILE = path.join(app.getPath('userData'), 'window-state.json');
 
 
 
+/**
+ * Loads persisted window state (position, size, maximized) from disk.
+ * @returns {Object|null} The saved state object, or null if none exists or is invalid.
+ */
 function loadWindowState() {
   try {
     if (!fs.existsSync(STATE_FILE)) return null;
@@ -32,6 +36,10 @@ function loadWindowState() {
 }
 
 
+/**
+ * Saves the current window state (position, size, maximized) to disk.
+ * @param {import('electron').BrowserWindow} win - The window to save state for.
+ */
 function saveWindowState(win) {
   try {
     const isMaximized = win.isMaximized();
