@@ -4,11 +4,7 @@ const { dialog } = require('electron');
 
 const MEDIA_ERROR_PATTERN = /\b(media|screen.?shar|webrtc|video|destination.?sharing|capturer|pipewire|getdisplaymedia)\b/i;
 
-/**
- * Attaches error monitoring listeners to a BrowserWindow's webContents.
- * @param {import('electron').WebContents} webContents
- * @param {import('electron').BrowserWindow} window
- */
+
 function attachErrorMonitor(webContents, window) {
   webContents.on('render-process-gone', (_event, details) => {
     const { reason, exitCode } = details;
@@ -53,7 +49,7 @@ function attachErrorMonitor(webContents, window) {
         `error: ${errorDescription} (code: ${errorCode})`
     );
 
-    // If it's a main frame network error (e.g., ERR_INTERNET_DISCONNECTED)
+
     if (isMainFrame && errorCode !== -3 /* ERR_ABORTED */) {
       const path = require('path');
       window.loadFile(path.join(__dirname, 'assets', 'offline.html'));
