@@ -7,15 +7,10 @@ const { APP_NAME, ZOOM_WEB_CLIENT_URL } = require('./config/constants');
 
 const TRAY_ICON_PATH = path.join(__dirname, '../../build/icon.png');
 
-/**
- * @type {import('electron').Tray | null}
- */
+
 let tray = null;
 
-/**
- * Creates the system tray icon with a context menu.
- * @returns {import('electron').Tray} The created tray instance.
- */
+
 function createTray() {
   let icon;
 
@@ -76,9 +71,7 @@ function showMainWindow() {
   }
 }
 
-/**
- * @returns {import('electron').Tray | null}
- */
+
 function getTray() {
   return tray;
 }
