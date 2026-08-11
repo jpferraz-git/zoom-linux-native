@@ -17,9 +17,15 @@
         "electron": "^32.0.0",
         "electron-builder": "^25.0.0"
     },
+    "dependencies": {
+        "electron-updater": "^6.3.9"
+    },
     "build": {
         "appId": "dev.joaopedroferraz.zoomlinuxnative",
         "productName": "Zoom Linux Native",
+        "publish": {
+            "provider": "github"
+        },
         "directories": {
             "output": "dist"
         },
