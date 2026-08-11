@@ -6,19 +6,9 @@ const { app } = require('electron');
 
 const STATE_FILE = path.join(app.getPath('userData'), 'window-state.json');
 
-/**
- * @typedef {Object} WindowState
- * @property {number} x
- * @property {number} y
- * @property {number} width
- * @property {number} height
- * @property {boolean} isMaximized
- */
 
-/**
- * Loads the persisted window state from disk.
- * @returns {WindowState | null}
- */
+
+
 function loadWindowState() {
   try {
     if (!fs.existsSync(STATE_FILE)) return null;
@@ -41,10 +31,7 @@ function loadWindowState() {
   }
 }
 
-/**
- * Saves the current window bounds and maximized state to disk.
- * @param {import('electron').BrowserWindow} win
- */
+
 function saveWindowState(win) {
   try {
     const isMaximized = win.isMaximized();
