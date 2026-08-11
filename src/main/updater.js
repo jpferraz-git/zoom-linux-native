@@ -3,11 +3,9 @@
 const { autoUpdater } = require('electron-updater');
 const { dialog } = require('electron');
 
-/**
- * Initializes the auto updater.
- */
+
 function setupUpdater() {
-  autoUpdater.autoDownload = false; // Just notify for now, download manually via prompt
+  autoUpdater.autoDownload = false;
   
   autoUpdater.on('update-available', (info) => {
     dialog.showMessageBox({
