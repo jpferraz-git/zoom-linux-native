@@ -1,36 +1,29 @@
 'use strict';
 
-/**
- * Central allowlist of domains that may be navigated to inside the app.
- *
- * Why a single source: GEMINI.md §2 rule 4 mandates that navigation is
- * controlled by a central allowlist. Duplicating domain checks across
- * files is an explicit anti-pattern (§12). Every navigation guard and
- * window-open handler references this list, never a hardcoded string.
- *
- * Only Zoom-owned domains belong here. OAuth/SSO domains (Google,
- * Microsoft) may be added in Epic 5 if SSO login inside the app is
- * needed — but that decision must be documented here first.
- */
-
-/** @type {string[]} Hostnames allowed to load inside the BrowserWindow. */
-const ALLOWED_ORIGINS = [
-  'zoom.us',
-  'zoom.com',
+const ALLOWED_HOST_PATTERNS = [
+  /^([a-z0-9-]+\.)*zoom\.us$/i,
+  /^([a-z0-9-]+\.)*zoom\.com$/i,
+  /^([a-z0-9-]+\.)*zoomgov\.com$/i,
+  /^accounts\.google\.com$/i,
+  /^login\.microsoftonline\.com$/i,
+  /^login\.live\.com$/i,
+  /^appleid\.apple\.com$/i,
+  /^([a-z0-9-]+\.)*facebook\.com$/i,
 ];
 
-/**
- * Checks whether a given hostname belongs to the allowlist.
- *
- * Matches the exact domain or any subdomain (e.g. `us04web.zoom.us`).
- *
- * @param {string} hostname — the hostname portion of a URL (e.g. `zoom.us`).
- * @returns {boolean} `true` if the hostname is allowed inside the app.
- */
-function isAllowedOrigin(hostname) {
-  return ALLOWED_ORIGINS.some(
-    (allowed) => hostname === allowed || hostname.endsWith(`.${allowed}`)
-  );
+function isAllowedHostname(hostname) {
+  if (typeof hostname !== 'string' || hostname.length === 0) return false;
+  return ALLOWED_HOST_PATTERNS.some((pattern) => pattern.test(hostname));
 }
 
-module.exports = { ALLOWED_ORIGINS, isAllowedOrigin };
+function isAllowedUrl(urlString) {
+  try {
+    const { hostname, protocol } = new URL(urlString);
+    if (protocol !== 'https:') return false;
+    return isAllowedHostname(hostname);
+  } catch {
+    return false;
+  }
+}
+
+module.exports = { isAllowedHostname, isAllowedUrl };

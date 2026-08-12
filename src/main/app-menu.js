@@ -3,27 +3,9 @@
 const { Menu, shell } = require('electron');
 const { APP_NAME, ZOOM_WEB_CLIENT_URL } = require('./config/constants');
 
-/**
- * GitHub repository URL for the "About" / "Help" menu item.
- * @type {string}
- */
 const REPO_URL = 'https://github.com/jpferraz-git/zoom-linux-native';
 
-/**
- * Creates and sets the native application menu bar.
- *
- * Why: a proper menu bar is a basic expectation of a desktop application.
- * Without one, users can't use standard keyboard shortcuts (Ctrl+C/V/Z,
- * Ctrl+R to reload) and have no way to access DevTools for debugging.
- *
- * Menu structure:
- * - File: Quit
- * - Edit: Undo, Redo, Cut, Copy, Paste, Select All (standard roles)
- * - View: Reload, Force Reload, Zoom In/Out, Reset Zoom, DevTools, Fullscreen
- * - Help: About / Repository link
- *
- * @param {import('electron').BrowserWindow} mainWindow
- */
+
 function createAppMenu(mainWindow) {
   const isDev = !require('electron').app.isPackaged;
 
