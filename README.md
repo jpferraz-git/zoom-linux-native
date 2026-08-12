@@ -58,20 +58,43 @@ value on top of "just use the browser" in two ways:
 
 ## How it works, at a glance
 
-```
-┌─────────────────────────────┐
-│   Main process (Node.js)    │  Owns window creation, tray, permissions,
-│                              │  navigation guard, OS integration.
-└──────────────┬───────────────┘
-               │ contextBridge (single, typed channel)
-┌──────────────▼───────────────┐
-│      Preload script          │  Security boundary. Exposes a minimal,
-│                              │  explicit API — never raw ipcRenderer.
-└──────────────┬───────────────┘
-               │
-┌──────────────▼───────────────┐
-│   Renderer (zoom.us/wc)      │  Official Zoom Web Client, untouched.
-└─────────────────────────────┘
+```mermaid
+flowchart TD
+    %% Main Process Layer
+    subgraph Main["Main Process (Node.js)"]
+        direction TB
+        index["index.js (Entry)"]
+        wm["window-manager.js"]
+        perm["permission-manager.js"]
+        nav["security/navigation-guard.js"]
+        
+        index --> wm
+        index --> perm
+        index --> nav
+    end
+
+    %% Preload Layer
+    subgraph Pre["Preload Script"]
+        bridge["contextBridge (Facade)"]
+    end
+
+    %% Renderer Layer
+    subgraph Rend["Renderer Process"]
+        zoom["zoom.us/wc (Web Client)"]
+    end
+
+    %% OS Layer
+    subgraph OS["Linux OS"]
+        portal["xdg-desktop-portal (Wayland)"]
+        pipewire["PipeWire"]
+    end
+
+    %% Connections
+    Main <==>|"IPC (Strict Channels)"| bridge
+    bridge <==>|"Safe API"| Rend
+    perm -.->|"useSystemPicker: true"| portal
+    portal -.->|"Screen Feed"| pipewire
+    pipewire -.->|"WebRTC"| zoom
 ```
 
 Screen sharing flows through the OS-native `xdg-desktop-portal`/PipeWire pipeline.
@@ -80,10 +103,18 @@ The app enables Chromium's `WebRTCPipeWireCapturer` flag, which causes
 system's native screen picker on Wayland, or using X11's capture path on X11. This is
 the same pipeline every Chromium-based browser uses for stable screen sharing.
 
-Full conceptual walkthrough (display servers, compositors, WebRTC, Electron's process
-model) lives in [`GUIA_CONCEITUAL.md`](./GUIA_CONCEITUAL.md). Architecture rules and
-non-negotiable security constraints live in [`GEMINI.md`](./GEMINI.md). The build
-roadmap lives in [`PLANO_DE_TASKS.md`](./PLANO_DE_TASKS.md).
+Full architecture documentation, Mermaid diagrams, and technical decision rationale
+live in [`ARCHITECTURE.md`](./ARCHITECTURE.md). Security rules and non-negotiable
+constraints live in [`GEMINI.md`](./GEMINI.md). The build roadmap lives in
+[`TASK_PLAN.md`](./TASK_PLAN.md).
+
+## Demo
+
+> **TODO:** Add a GIF or short video showing the app running on a GNOME Wayland
+> session — screen sharing starting and stopping without crashes. This is the
+> strongest visual argument for the project.
+>
+> Suggested recording: before (native client crash) vs. after (this app, stable).
 
 ## Getting started
 
@@ -150,21 +181,34 @@ what makes it trustworthy as more than a demo:
 | Camera / Microphone | ✅ Works | ✅ Auto-approved | Permissions auto-granted for zoom.us origin only |
 | Native notifications | ✅ Works | ✅ Works | Electron supports Web Notifications natively |
 | Dependency on X11 | Required for workaround | None | Works on pure Wayland sessions |
-| System tray icon | ✅ Present | 🔜 Epic 3 | Planned for next development phase |
+| System tray icon | ✅ Present | ✅ Present | Tray with Open / Reload / Quit; minimizes to tray on close |
+| Offline fallback | N/A | ✅ Built-in | Friendly error page with one-click retry instead of Chromium's blank screen |
+| Content Security Policy | N/A | ✅ Enforced | CSP headers injected via session; `webviewTag` disabled, navigation restricted |
 | End-to-end encryption (E2EE) | ✅ Supported | ❌ Not available | Web Client limitation |
 | Breakout rooms (host) | ✅ Supported | ⚠️ Limited | Web Client supports joining but not managing |
 
-> **Last tested:** 2026-08-09. Results reflect the Zoom Web Client as of this date.
+> **Last tested:** 2026-08-11. Results reflect the Zoom Web Client as of this date.
 > The Zoom Web Client is maintained by Zoom — its capabilities may change independently
 > of this project. Virtual backgrounds and E2EE are architectural limitations of the
 > Web Client, not bugs this project can fix.
+
+## Technical Decisions
+
+**Why Electron and not Tauri / native?**
+Tauri uses the system's webview (WebKitGTK on Linux). WebKitGTK's WebRTC implementation and Wayland screen sharing support is historically less stable and feature-complete than Chromium's. By using Electron, we bundle a known, specific version of Chromium whose `WebRTCPipeWireCapturer` pipeline is production-tested by millions of Chrome users on Linux.
+
+**Why wrap the Web Client instead of using the Zoom Meeting SDK?**
+The Zoom Meeting SDK for Linux requires C++ and is tied to the same underlying proprietary media engine as the native client. If the native client crashes on Wayland, a custom app built on the C++ SDK is highly likely to suffer the exact same crash. The Web Client, however, uses standard browser WebRTC APIs, completely bypassing Zoom's proprietary display server integration in favor of Chromium's.
+
+**Why `useSystemPicker: true`?**
+Electron 32 deprecated the `desktopCapturer.getSources()` API which previously allowed apps to build custom screen selection UIs. For Wayland, building a custom UI is actively harmful because Wayland enforces security boundaries where apps cannot see the screen — they must ask the OS portal (`xdg-desktop-portal`) to show the selection dialog. `useSystemPicker: true` delegates the UI entirely to the OS, which is the only architecturally correct way to capture screens on modern Linux.
 
 ## Contributing
 
 This is currently a solo learning/portfolio project built with AI-agent assistance
 (Google Antigravity). See `GEMINI.md` for the architecture contract and
-`.agent/workflows/` for the repeatable workflows used during development. Issues and
-PRs are welcome once the initial MVP epics in `PLANO_DE_TASKS.md` are complete.
+`.agents/workflows/` for the repeatable workflows used during development. Issues and
+PRs are welcome once the initial MVP epics in `TASK_PLAN.md` are complete.
 
 ## License
 

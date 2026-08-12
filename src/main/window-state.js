@@ -6,9 +6,6 @@ const { app } = require('electron');
 
 const STATE_FILE = path.join(app.getPath('userData'), 'window-state.json');
 
-
-
-
 function loadWindowState() {
   try {
     if (!fs.existsSync(STATE_FILE)) return null;
