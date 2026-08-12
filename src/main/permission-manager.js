@@ -1,6 +1,6 @@
 'use strict';
 
-const { isAllowedHostname } = require('./config/allowed-origins');
+const { isAllowedUrl } = require('./config/allowed-origins');
 
 const ZOOM_ALLOWED_PERMISSIONS = new Set([
   'media',
@@ -10,16 +10,7 @@ const ZOOM_ALLOWED_PERMISSIONS = new Set([
 function setupPermissionHandlers(ses) {
   ses.setPermissionRequestHandler((webContents, permission, callback, details) => {
     const origin = details.requestingUrl || '';
-    let hostname = '';
-
-    try {
-      hostname = new URL(origin).hostname;
-    } catch {
-      callback(false);
-      return;
-    }
-
-    if (isAllowedHostname(hostname) && ZOOM_ALLOWED_PERMISSIONS.has(permission)) {
+    if (isAllowedUrl(origin) && ZOOM_ALLOWED_PERMISSIONS.has(permission)) {
       callback(true);
       return;
     }
@@ -28,15 +19,7 @@ function setupPermissionHandlers(ses) {
   });
 
   ses.setPermissionCheckHandler((webContents, permission, requestingOrigin) => {
-    let hostname = '';
-
-    try {
-      hostname = new URL(requestingOrigin).hostname;
-    } catch {
-      return false;
-    }
-
-    if (isAllowedHostname(hostname) && ZOOM_ALLOWED_PERMISSIONS.has(permission)) {
+    if (isAllowedUrl(requestingOrigin) && ZOOM_ALLOWED_PERMISSIONS.has(permission)) {
       return true;
     }
 

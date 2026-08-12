@@ -72,6 +72,18 @@ describe('permission-manager', () => {
       expect(callback).toHaveBeenCalledWith(false);
     });
 
+    test('denies media permission for non-https zoom origin', () => {
+      const callback = jest.fn();
+      permissionRequestHandler(
+        {},
+        'media',
+        callback,
+        { requestingUrl: 'http://zoom.us/wc/join/123' }
+      );
+
+      expect(callback).toHaveBeenCalledWith(false);
+    });
+
     test('denies geolocation permission even for zoom.us', () => {
       const callback = jest.fn();
       permissionRequestHandler(
@@ -125,6 +137,16 @@ describe('permission-manager', () => {
         {},
         'media',
         'https://evil.com'
+      );
+
+      expect(result).toBe(false);
+    });
+
+    test('returns false for media check from non-https zoom origin', () => {
+      const result = permissionCheckHandler(
+        {},
+        'media',
+        'http://zoom.us'
       );
 
       expect(result).toBe(false);
