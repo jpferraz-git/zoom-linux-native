@@ -116,7 +116,54 @@ constraints live in [`GEMINI.md`](./GEMINI.md). The build roadmap lives in
 >
 > Suggested recording: before (native client crash) vs. after (this app, stable).
 
-## Getting started
+## Installation
+
+### Flatpak (recommended)
+
+The Flatpak build includes all dependencies and runs sandboxed. To build and install
+locally:
+
+```bash
+# 1. Build the Electron app
+npm ci
+npm run build:linux -- --dir
+
+# 2. Build and install the Flatpak
+cd flatpak
+flatpak-builder --force-clean --user --install build-dir dev.joaopedroferraz.zoomlinuxnative.yml
+
+# 3. Run
+flatpak run dev.joaopedroferraz.zoomlinuxnative
+```
+
+> **Note:** You need `flatpak-builder` installed on your system. On Ubuntu/Debian:
+> `sudo apt install flatpak-builder`. On Fedora: `sudo dnf install flatpak-builder`.
+
+### AppImage
+
+Download the `.AppImage` from the
+[Releases](https://github.com/jpferraz-git/zoom-linux-native/releases) page, make it
+executable, and run:
+
+```bash
+chmod +x Zoom-Linux-Native-*.AppImage
+./Zoom-Linux-Native-*.AppImage
+```
+
+### .deb / .rpm
+
+Download the appropriate package from
+[Releases](https://github.com/jpferraz-git/zoom-linux-native/releases) and install:
+
+```bash
+# Debian/Ubuntu
+sudo dpkg -i zoom-linux-native_*.deb
+
+# Fedora/RHEL
+sudo rpm -i zoom-linux-native-*.rpm
+```
+
+## Getting started (development)
 
 ### Prerequisites
 
@@ -167,6 +214,15 @@ npm run build:linux   # AppImage + .deb + .rpm
 
 Artifacts land in `dist/`.
 
+### Run tests
+
+```bash
+npm test
+```
+
+Unit tests cover the security-critical modules: navigation allowlist, permission
+manager, deep link handler, and navigation guard.
+
 ## Known limitations and trade-offs
 
 This project is upfront about what it does *not* fix, because that honesty is part of
@@ -187,7 +243,7 @@ what makes it trustworthy as more than a demo:
 | End-to-end encryption (E2EE) | ✅ Supported | ❌ Not available | Web Client limitation |
 | Breakout rooms (host) | ✅ Supported | ⚠️ Limited | Web Client supports joining but not managing |
 
-> **Last tested:** 2026-08-11. Results reflect the Zoom Web Client as of this date.
+> **Last tested:** 2026-08-18. Results reflect the Zoom Web Client as of this date.
 > The Zoom Web Client is maintained by Zoom — its capabilities may change independently
 > of this project. Virtual backgrounds and E2EE are architectural limitations of the
 > Web Client, not bugs this project can fix.
