@@ -2,6 +2,7 @@
 
 const { dialog, ipcMain } = require('electron');
 const { CHANNELS } = require('./ipc/channels');
+const { logTelemetryEvent } = require('./telemetry-log');
 
 const MEDIA_ERROR_PATTERN = /\b(media|screen.?shar|webrtc|video|destination.?sharing|capturer|pipewire|getdisplaymedia|webglcontextlost)\b/i;
 
@@ -17,6 +18,8 @@ const MEDIA_ERROR_PATTERN = /\b(media|screen.?shar|webrtc|video|destination.?sha
  * preload) que faz reload silencioso em vez do dialog genérico de crash —
  * a perda de contexto WebGL é recuperável e não exige intervenção do usuário.
  *
+ * Todos os eventos são registrados no telemetry-log.js para análise posterior.
+ *
  * @param {Electron.WebContents} webContents
  * @param {Electron.BrowserWindow} window
  */
@@ -26,6 +29,11 @@ function attachErrorMonitor(webContents, window) {
     console.error(
       `[error-monitor] Renderer process gone. Reason: ${reason}, exit code: ${exitCode}`
     );
+
+    logTelemetryEvent({
+      type: 'renderer-crashed',
+      message: `reason: ${reason}, exitCode: ${exitCode}`,
+    });
 
     if (window.isDestroyed()) return;
 
@@ -51,10 +59,17 @@ function attachErrorMonitor(webContents, window) {
 
   webContents.on('console-message', (_event, level, message, line, sourceId) => {
     if (level >= 2 && MEDIA_ERROR_PATTERN.test(message)) {
+      const severity = level === 3 ? 'error' : 'warning';
       console.warn(
-        `[error-monitor] Media-related console ${level === 3 ? 'error' : 'warning'}: ${message}` +
+        `[error-monitor] Media-related console ${severity}: ${message}` +
           (sourceId ? ` (source: ${sourceId}:${line})` : '')
       );
+
+      logTelemetryEvent({
+        type: `media-console-${severity}`,
+        message,
+        ...(sourceId && { source: `${sourceId}:${line}` }),
+      });
     }
   });
 
@@ -71,6 +86,8 @@ function attachErrorMonitor(webContents, window) {
       '[error-monitor] WebGL context lost detected — reloading page silently'
     );
 
+    logTelemetryEvent({ type: 'webgl-context-lost' });
+
     if (window.isDestroyed()) return;
 
     webContents.reloadIgnoringCache();
@@ -82,6 +99,11 @@ function attachErrorMonitor(webContents, window) {
         `error: ${errorDescription} (code: ${errorCode})`
     );
 
+    logTelemetryEvent({
+      type: 'page-load-failed',
+      message: `${errorDescription} (code: ${errorCode})`,
+      source: validatedURL,
+    });
 
     if (isMainFrame && errorCode !== -3 /* ERR_ABORTED */) {
       const path = require('path');
