@@ -11,11 +11,29 @@ const { setupCSP } = require('./security/csp-manager');
 const { setupUpdater } = require('./updater');
 const { extractDeepLinkFromArgv, handleDeepLink } = require('./deep-link-handler');
 const { registerAppHandlers } = require('./ipc/handlers/app-handlers');
+const { execSync } = require('child_process');
 
-app.commandLine.appendSwitch(
-  'enable-features',
-  'WebRTCPipeWireCapturer,WaylandWindowDecorations'
-);
+/**
+ * Verifica de forma síncrona se a máquina possui placa de vídeo NVIDIA (Linux).
+ * Se o processo falhar (ex: lspci não encontrado), assume false.
+ */
+function hasNvidiaGpu() {
+  if (process.platform !== 'linux') return false;
+  try {
+    execSync('lspci -nn | grep -iE "vga|3d" | grep -i nvidia', { stdio: 'ignore' });
+    return true;
+  } catch (err) {
+    return false;
+  }
+}
+
+let enableFeatures = 'WebRTCPipeWireCapturer,WaylandWindowDecorations';
+
+if (!hasNvidiaGpu()) {
+  enableFeatures += ',VaapiVideoDecoder,VaapiVideoEncoder';
+}
+
+app.commandLine.appendSwitch('enable-features', enableFeatures);
 app.commandLine.appendSwitch('ozone-platform-hint', 'auto');
 
 if (process.defaultApp) {
