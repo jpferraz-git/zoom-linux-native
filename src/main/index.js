@@ -69,7 +69,7 @@ if (!isFirstInstance) {
     const mainWindow = windowManager.createMainWindow();
 
     createTray();
-    createAppMenu(mainWindow);
+    createAppMenu(() => windowManager.getMainWindow());
     registerAppHandlers(() => windowManager.getMainWindow());
 
     // Handle deep link from initial launch argv (app wasn't running)
