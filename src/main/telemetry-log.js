@@ -64,8 +64,8 @@ function rotateIfNeeded() {
     if (stats.size > MAX_FILE_SIZE) {
       fs.unlinkSync(TELEMETRY_FILE);
     }
-  } catch {
-    // Se não conseguir checar/apagar, segue em frente — próximo append vai criar de novo.
+  } catch (err) {
+    console.warn('[telemetry-log] Failed to check/rotate telemetry file:', err.message);
   }
 }
 
