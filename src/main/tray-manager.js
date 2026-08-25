@@ -7,10 +7,16 @@ const { APP_NAME, ZOOM_WEB_CLIENT_URL } = require('./config/constants');
 
 const TRAY_ICON_PATH = path.join(__dirname, '../../build/icon.png');
 
-
 let tray = null;
 
-
+/**
+ * Cria o ícone de bandeja (system tray) com menu de contexto.
+ *
+ * O menu oferece Open (mostra/foca a janela), Reload (recarrega o web client)
+ * e Quit (encerra o app). Click no ícone também mostra/foca a janela.
+ *
+ * @returns {Electron.Tray}
+ */
 function createTray() {
   let icon;
 
@@ -71,9 +77,5 @@ function showMainWindow() {
   }
 }
 
+module.exports = { createTray };
 
-function getTray() {
-  return tray;
-}
-
-module.exports = { createTray, getTray };
