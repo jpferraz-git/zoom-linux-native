@@ -5,8 +5,16 @@ const { APP_NAME, ZOOM_WEB_CLIENT_URL } = require('./config/constants');
 
 const REPO_URL = 'https://github.com/jpferraz-git/zoom-linux-native';
 
-
-function createAppMenu(mainWindow) {
+/**
+ * Cria e aplica o menu nativo da aplicação.
+ *
+ * Recebe um getter para a janela principal em vez de uma referência direta,
+ * evitando que os clicks apontem para uma janela destruída caso ela seja
+ * recriada (ex: crash + reload, ou evento 'activate' no macOS).
+ *
+ * @param {() => Electron.BrowserWindow | null} getMainWindow
+ */
+function createAppMenu(getMainWindow) {
   const isDev = !require('electron').app.isPackaged;
 
   const template = [
@@ -35,14 +43,20 @@ function createAppMenu(mainWindow) {
           label: 'Reload Zoom',
           accelerator: 'CmdOrCtrl+R',
           click: () => {
-            mainWindow.loadURL(ZOOM_WEB_CLIENT_URL);
+            const win = getMainWindow();
+            if (win && !win.isDestroyed()) {
+              win.loadURL(ZOOM_WEB_CLIENT_URL);
+            }
           },
         },
         {
           label: 'Force Reload',
           accelerator: 'CmdOrCtrl+Shift+R',
           click: () => {
-            mainWindow.webContents.reloadIgnoringCache();
+            const win = getMainWindow();
+            if (win && !win.isDestroyed()) {
+              win.webContents.reloadIgnoringCache();
+            }
           },
         },
         { type: 'separator' },
@@ -58,7 +72,10 @@ function createAppMenu(mainWindow) {
                 label: 'Toggle DevTools',
                 accelerator: 'F12',
                 click: () => {
-                  mainWindow.webContents.toggleDevTools();
+                  const win = getMainWindow();
+                  if (win && !win.isDestroyed()) {
+                    win.webContents.toggleDevTools();
+                  }
                 },
               },
             ]
@@ -89,3 +106,4 @@ function createAppMenu(mainWindow) {
 }
 
 module.exports = { createAppMenu };
+
