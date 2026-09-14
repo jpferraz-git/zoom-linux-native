@@ -6,12 +6,6 @@ const { APP_NAME, ZOOM_WEB_CLIENT_URL } = require('./config/constants');
 const REPO_URL = 'https://github.com/jpferraz-git/zoom-linux-native';
 
 /**
- * Cria e aplica o menu nativo da aplicação.
- *
- * Recebe um getter para a janela principal em vez de uma referência direta,
- * evitando que os clicks apontem para uma janela destruída caso ela seja
- * recriada (ex: crash + reload, ou evento 'activate' no macOS).
- *
  * @param {() => Electron.BrowserWindow | null} getMainWindow
  */
 function createAppMenu(getMainWindow) {
@@ -67,18 +61,18 @@ function createAppMenu(getMainWindow) {
         { role: 'togglefullscreen' },
         ...(isDev
           ? [
-              { type: 'separator' },
-              {
-                label: 'Toggle DevTools',
-                accelerator: 'F12',
-                click: () => {
-                  const win = getMainWindow();
-                  if (win && !win.isDestroyed()) {
-                    win.webContents.toggleDevTools();
-                  }
-                },
+            { type: 'separator' },
+            {
+              label: 'Toggle DevTools',
+              accelerator: 'F12',
+              click: () => {
+                const win = getMainWindow();
+                if (win && !win.isDestroyed()) {
+                  win.webContents.toggleDevTools();
+                }
               },
-            ]
+            },
+          ]
           : []),
       ],
     },
