@@ -259,13 +259,6 @@ The Zoom Meeting SDK for Linux requires C++ and is tied to the same underlying p
 **Why `useSystemPicker: true`?**
 Electron 32 deprecated the `desktopCapturer.getSources()` API which previously allowed apps to build custom screen selection UIs. For Wayland, building a custom UI is actively harmful because Wayland enforces security boundaries where apps cannot see the screen — they must ask the OS portal (`xdg-desktop-portal`) to show the selection dialog. `useSystemPicker: true` delegates the UI entirely to the OS, which is the only architecturally correct way to capture screens on modern Linux.
 
-## Contributing
-
-This is currently a solo learning/portfolio project built with AI-agent assistance
-(Google Antigravity). See `GEMINI.md` for the architecture contract and
-`.agents/workflows/` for the repeatable workflows used during development. Issues and
-PRs are welcome once the initial MVP epics in `TASK_PLAN.md` are complete.
-
 ## License
 
 MIT — see [`LICENSE`](./LICENSE). This license covers this project's own code only;
