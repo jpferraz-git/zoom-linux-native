@@ -5,8 +5,10 @@ const { APP_NAME, ZOOM_WEB_CLIENT_URL } = require('./config/constants');
 
 const REPO_URL = 'https://github.com/jpferraz-git/zoom-linux-native';
 
-
-function createAppMenu(mainWindow) {
+/**
+ * @param {() => Electron.BrowserWindow | null} getMainWindow
+ */
+function createAppMenu(getMainWindow) {
   const isDev = !require('electron').app.isPackaged;
 
   const template = [
@@ -35,14 +37,20 @@ function createAppMenu(mainWindow) {
           label: 'Reload Zoom',
           accelerator: 'CmdOrCtrl+R',
           click: () => {
-            mainWindow.loadURL(ZOOM_WEB_CLIENT_URL);
+            const win = getMainWindow();
+            if (win && !win.isDestroyed()) {
+              win.loadURL(ZOOM_WEB_CLIENT_URL);
+            }
           },
         },
         {
           label: 'Force Reload',
           accelerator: 'CmdOrCtrl+Shift+R',
           click: () => {
-            mainWindow.webContents.reloadIgnoringCache();
+            const win = getMainWindow();
+            if (win && !win.isDestroyed()) {
+              win.webContents.reloadIgnoringCache();
+            }
           },
         },
         { type: 'separator' },
@@ -53,15 +61,18 @@ function createAppMenu(mainWindow) {
         { role: 'togglefullscreen' },
         ...(isDev
           ? [
-              { type: 'separator' },
-              {
-                label: 'Toggle DevTools',
-                accelerator: 'F12',
-                click: () => {
-                  mainWindow.webContents.toggleDevTools();
-                },
+            { type: 'separator' },
+            {
+              label: 'Toggle DevTools',
+              accelerator: 'F12',
+              click: () => {
+                const win = getMainWindow();
+                if (win && !win.isDestroyed()) {
+                  win.webContents.toggleDevTools();
+                }
               },
-            ]
+            },
+          ]
           : []),
       ],
     },
@@ -89,3 +100,4 @@ function createAppMenu(mainWindow) {
 }
 
 module.exports = { createAppMenu };
+

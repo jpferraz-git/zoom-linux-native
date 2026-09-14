@@ -3,7 +3,13 @@
 const { autoUpdater } = require('electron-updater');
 const { dialog } = require('electron');
 
-
+/**
+ * Configura o auto-updater via GitHub Releases.
+ *
+ * O download não é automático — o usuário recebe um dialog perguntando se
+ * deseja baixar, e outro quando o download termina perguntando se quer
+ * reiniciar. Isso evita surpresas durante reuniões em andamento.
+ */
 function setupUpdater() {
   autoUpdater.autoDownload = false;
   
@@ -34,14 +40,15 @@ function setupUpdater() {
   });
 
   autoUpdater.on('error', (err) => {
-    console.error('Error in auto-updater.', err);
+    console.error('[updater] Auto-updater error:', err.message);
   });
 
   try {
     autoUpdater.checkForUpdatesAndNotify();
-  } catch (error) {
-    console.error('Failed to check for updates', error);
+  } catch (err) {
+    console.error('[updater] Failed to check for updates:', err.message);
   }
 }
 
 module.exports = { setupUpdater };
+

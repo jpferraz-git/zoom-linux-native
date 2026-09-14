@@ -6,6 +6,14 @@ const { app } = require('electron');
 
 const STATE_FILE = path.join(app.getPath('userData'), 'window-state.json');
 
+/**
+ * Restaura posição e tamanho da janela salvos em disco.
+ *
+ * Retorna null se o arquivo não existir, estiver corrompido, ou contiver
+ * dimensões inválidas (< 100px) — o caller usa defaults nesse caso.
+ *
+ * @returns {{ x: number, y: number, width: number, height: number, isMaximized: boolean } | null}
+ */
 function loadWindowState() {
   try {
     if (!fs.existsSync(STATE_FILE)) return null;
@@ -29,6 +37,14 @@ function loadWindowState() {
 }
 
 
+/**
+ * Salva posição e tamanho da janela em disco (JSON).
+ *
+ * Usa getNormalBounds() quando maximizada para preservar a geometria
+ * pré-maximize, permitindo restaurar corretamente na próxima abertura.
+ *
+ * @param {Electron.BrowserWindow} win
+ */
 function saveWindowState(win) {
   try {
     const isMaximized = win.isMaximized();

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>dev.joaopedroferraz.zoomlinuxnative</id>
+
+  <name>Zoom Linux Native</name>
+  <summary>Unofficial Zoom client for Linux, optimized for Wayland screen sharing</summary>
+
+  <metadata_license>MIT</metadata_license>
+  <project_license>MIT</project_license>
+
+  <developer id="dev.joaopedroferraz">
+    <name>João Pedro Ferraz</name>
+  </developer>
+
+  <description>
+    <p>
+      Zoom Linux Native is an unofficial Electron wrapper around the Zoom Web Client,
+      built as a resilience layer for the post-X11 era on Linux. The official Zoom
+      desktop client (Qt) has a long-standing, unresolved crash when sharing screens
+      on Wayland + PipeWire sessions. This project bypasses that bug entirely by
+      using Chromium's proven WebRTC + PipeWire pipeline for screen capture.
+    </p>
+    <p>
+      Key features include a system tray icon, native notifications, persistent window
+      state, automatic deep-link handling for zoommtg:// URLs, offline fallback pages,
+      enforced Content Security Policy, and active mitigation of known Zoom Web Client
+      UX regressions (chat panel collapse, screen share viewing glitches).
+    </p>
+    <p>
+      This project is not affiliated with, endorsed by, or sponsored by Zoom Video
+      Communications, Inc.
+    </p>
+  </description>
+
+  <url type="homepage">https://github.com/jpferraz-git/zoom-linux-native</url>
+  <url type="bugtracker">https://github.com/jpferraz-git/zoom-linux-native/issues</url>
+  <url type="vcs-browser">https://github.com/jpferraz-git/zoom-linux-native</url>
+
+  <launchable type="desktop-id">dev.joaopedroferraz.zoomlinuxnative.desktop</launchable>
+
+  <provides>
+    <binary>zoom-linux-native</binary>
+  </provides>
+
+  <categories>
+    <category>Network</category>
+    <category>VideoConference</category>
+    <category>Chat</category>
+  </categories>
+
+  <content_rating type="oars-1.1" />
+
+  <releases>
+    <release version="1.0.0" date="2026-08-18">
+      <description>
+        <p>Initial stable release with full Wayland screen sharing support,
+           system tray integration, deep link handling, offline fallback,
+           CSP enforcement, and unit test coverage for all security modules.</p>
+      </description>
+    </release>
+  </releases>
+
+  <supports>
+    <control>pointing</control>
+    <control>keyboard</control>
+  </supports>
+
+  <requires>
+    <internet>always</internet>
+  </requires>
+
+</component>

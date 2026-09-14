@@ -28,8 +28,8 @@ function attachNavigationGuards(win) {
       } else {
         shell.openExternal(url);
       }
-    } catch {
-      // Ignore
+    } catch (err) {
+      console.warn('[navigation-guard] Failed to parse window-open URL:', err.message);
     }
 
     return { action: 'deny' };

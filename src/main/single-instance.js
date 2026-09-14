@@ -1,8 +1,18 @@
 'use strict';
 
-const { app, BrowserWindow } = require('electron');
+const { app } = require('electron');
 const { extractDeepLinkFromArgv, handleDeepLink } = require('./deep-link-handler');
 
+/**
+ * Garante que apenas uma instância do app esteja rodando.
+ *
+ * Se uma segunda instância for aberta, ela repassa seus argumentos (incluindo
+ * possíveis deep links zoommtg://) para a instância existente e encerra.
+ * A instância original foca a janela principal e processa o deep link.
+ *
+ * @param {() => Electron.BrowserWindow | null} getMainWindow
+ * @returns {boolean} true se esta é a primeira instância, false se é duplicata.
+ */
 function enforceSingleInstance(getMainWindow) {
   const gotTheLock = app.requestSingleInstanceLock();
 
@@ -12,16 +22,13 @@ function enforceSingleInstance(getMainWindow) {
   }
 
   app.on('second-instance', (_event, argv) => {
-    // Focus existing window
-    const windows = BrowserWindow.getAllWindows();
-    if (windows.length > 0) {
-      const win = windows[0];
+    const win = getMainWindow();
+    if (win) {
       if (win.isMinimized()) win.restore();
       win.show();
       win.focus();
     }
 
-    // Check if the second instance was launched with a deep link
     const deepLinkUrl = extractDeepLinkFromArgv(argv);
     if (deepLinkUrl) {
       handleDeepLink(deepLinkUrl, getMainWindow);
@@ -32,3 +39,4 @@ function enforceSingleInstance(getMainWindow) {
 }
 
 module.exports = { enforceSingleInstance };
+
