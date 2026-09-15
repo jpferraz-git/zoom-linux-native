@@ -12,7 +12,6 @@
         "start:wayland": "electron . --ozone-platform=wayland",
         "build:linux": "electron-builder --linux AppImage deb rpm",
         "build:appimage": "electron-builder --linux AppImage",
-        "build:dir": "electron-builder --dir",
         "test": "jest --verbose"
     },
     "devDependencies": {
